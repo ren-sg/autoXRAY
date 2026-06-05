@@ -1,0 +1,3 @@
+.env
+extensions/services/*.env
+!extensions/services/example.env.example

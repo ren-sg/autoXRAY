@@ -1,0 +1,3 @@
+[submodule "vendor/autoXRAY"]
+	path = vendor/autoXRAY
+	url = https://github.com/xVRVx/autoXRAY
