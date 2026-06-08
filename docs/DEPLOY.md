@@ -115,11 +115,15 @@ cat /etc/autoXRAY/state.env
 - `USE_WARP=1` — default upstream behavior (WARP-cli SOCKS on :40000)
 - `USE_WARP=0` — post-install patches Xray routing `warp` → `direct`
 
+## Certificates
+
+Let's Encrypt, 90 days, auto-renew via `certbot.timer`. See [CERTIFICATES.md](CERTIFICATES.md).
+
 ## Troubleshooting
 
 | Issue | Check |
 |-------|--------|
-| certbot fails | DNS, port 80 open, `/.well-known` on nginx :80 |
+| certbot fails | DNS, port 80 open, `/.well-known` on nginx :80; [CERTIFICATES.md](CERTIFICATES.md) |
 | 502 on app subdomain | Docker listening on `SERVICE_UPSTREAM` host:port |
 | VPN broken after re-run | Update client with new keys / subscription URL |
 | WARP not listening | [vendor/autoXRAY/test/warp-readme.md](../vendor/autoXRAY/test/warp-readme.md) |

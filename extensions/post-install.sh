@@ -7,6 +7,19 @@ AUTOXRAY_ROOT="${AUTOXRAY_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 # shellcheck source=extensions/lib/common.sh
 source "$AUTOXRAY_ROOT/extensions/lib/common.sh"
 
+ensure_certbot_renewal_hooks() {
+    local hook_dir="/etc/letsencrypt/renewal-hooks/deploy"
+    local hook="$hook_dir/autoxray-reload-nginx.sh"
+    mkdir -p "$hook_dir"
+    cat > "$hook" <<'EOF'
+#!/bin/bash
+# autoXRAY extensions — reload nginx after any cert renewal
+systemctl reload nginx
+EOF
+    chmod +x "$hook"
+    log_info "Certbot renewal hook: $hook"
+}
+
 ensure_cert() {
     local domain="$1"
     if [[ -f "/etc/letsencrypt/live/$domain/fullchain.pem" ]]; then
@@ -18,7 +31,8 @@ ensure_cert() {
     certbot certonly --webroot -w /var/www/html \
         -d "$domain" \
         -m "$CERTBOT_EMAIL" \
-        --agree-tos --non-interactive
+        --agree-tos --non-interactive \
+        --deploy-hook "systemctl reload nginx"
 }
 
 issue_service_certs() {
@@ -109,6 +123,7 @@ main() {
 
     mkdir -p "$NGINX_CUSTOM_DIR"
     ensure_nginx_include
+    ensure_certbot_renewal_hooks
 
     issue_service_certs
     render_all_with_websocket
